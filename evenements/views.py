@@ -14,7 +14,6 @@ from django.db.models import Q
 from django_mailer import send_mail
 from django.template.loader import get_template
 from django.template import Context
-from django.core.mail import EmailMultiAlternatives
 import settings
 
 class EvenementCreateView(CreateView):

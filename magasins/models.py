@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from categories.models import Categories
 from django.forms import ModelForm
 from django import forms
-from geolocalisation import geocoding
+from geolocalisation import get_lat_lng
 from django.forms import widgets
 from decimal import Decimal
 # -*- coding: UTF-8 -*-
@@ -47,10 +47,10 @@ class MagasinForm(ModelForm):
 
     def clean(self):
         if self.cleaned_data.has_key('adresse') and self.cleaned_data.has_key('cp') and self.cleaned_data.has_key('ville'):
-            lat, lng = geocoding (self.cleaned_data['adresse'], self.cleaned_data['cp'], self.cleaned_data['ville'])
-            print "Lattitude %s - Longitude %s" % (lat, lng)
-            self.cleaned_data['lat']=lat
-            self.cleaned_data['lng']=lng
+            location = '+'.join(filter(None, (self.cleaned_data['adresse'], self.cleaned_data['cp'], self.cleaned_data['ville'], 'FRANCE')))
+            (lat,lng) = get_lat_lng(location)
+            self.cleaned_data['lat_home'] = lat
+            self.cleaned_data['lng_home'] = lng
         else:
             pass
         return self.cleaned_data 

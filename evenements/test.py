@@ -42,7 +42,7 @@ def composition_message(**kwargs):
     texte = get_template('emails/evenement.txt')
     texte_contenu = texte.render(d)
     print texte_contenu
-    send_mail('Nouvelle offre FLASH', texte_contenu, settings.DEFAULT_FROM_EMAIL, ['youpsla@gmail.com'])
+    send_mail('Nouvelle offre FLASH', texte_contenu, 'Alain <claudine.abraham8@orange.fr>', ['youpsla@gmail.com'])
     #msg = EmailMultiAlternatives ('Nouvelle offre FLASH', texte_contenu, 'youpsla@free.fr', 'youpsla@free.fr')
 
 composition_message()
