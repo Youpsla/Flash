@@ -6,7 +6,6 @@ from django.template import Context
 from django.core.mail import EmailMultiAlternatives
 import settings
 from django.db.models import get_model
-from datetime import datetime, tzinfo
 import locale
 
 
