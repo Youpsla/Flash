@@ -12,7 +12,8 @@ from magasins.signals import change_watcher
 from django.db.models import get_model
 
 class Magasin (models.Model):
-    name = models.CharField(max_length=255, verbose_name = "Nom du magasin")
+    nom = models.CharField(max_length=255, verbose_name = "Nom du magasin")
+    nom_commercial = models.CharField(max_length=255, verbose_name = "Nom du magasin")
     date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)
     adresse = models.CharField(max_length=255)
@@ -40,6 +41,7 @@ class MagasinForm(ModelForm):
             return Decimal(value)
     lat = BlankIntField(widget = widgets.HiddenInput())
     lng = BlankIntField(widget = widgets.HiddenInput())
+    category = forms.ModelMultipleChoiceField(queryset=Category.objects.all().order_by('nom'))
 
     class Meta:
         model = Magasin

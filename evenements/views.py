@@ -61,9 +61,10 @@ class EvenementDeleteView(DeleteView):
 
 @login_required
 def activation(request, **kwargs):
-    """ Fonction qui active un évènement.
+    """ Fonction qui active un évènement et envoi les messages Emails.
+        Appel à la classe EvenementsMessages.
         Prends en argument id_magasin et pk (Clé primaire de l'évènement).
-        Retour sur la page de détail de l'évènement
+        Retour sur la page de détail de l'évènement.
         """
     print kwargs
     magasin_id = kwargs['magasin_id']

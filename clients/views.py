@@ -9,7 +9,7 @@ class InscriptionWizard(SessionWizardView):
         instance = Customer()
         for form in form_list:
             for field, value in form.cleaned_data.iteritems():
-                if field == 'category' and instance.id==None:
+                if field == 'nom' and instance.id==None:
                     instance.save()
                 setattr(instance, field, value)
         instance.save()
