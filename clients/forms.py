@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from collections import
 from django.forms.widgets import RadioSelect
 from django import forms
 from clients.models import Customer

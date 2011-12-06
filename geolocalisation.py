@@ -3,24 +3,11 @@ from geopy import geocoders
 from geopy import distance as geopy_distance
 from django import forms
 
-def geocoding(adr, cp, ville):
-    print "geocoding"
-    g = geocoders.Google(domain='maps.google.fr')
-    try:
-        place, (lat, lng) = g.geocode("%s %s %s" % (adr, cp, ville))
-        print "Place :", place
-    except :
-        raise forms.ValidationError("Erreure de geolocalisation de votre adresse")
-    print "%s: %.9f, %.9f" % (place, lat, lng)
-    return lat, lng
-
 def geocode_distance((x1, y1), (x2, y2)): 
     if (x1, y1) == (x2, y2): 
         return 0 
     d = geopy_distance.distance((x1, y1), (x2, y2))  
     return d.meters
-
-# -*- coding: UTF-8 -*-
 
 import urllib, urllib2, simplejson
 from django.utils.encoding import smart_str
