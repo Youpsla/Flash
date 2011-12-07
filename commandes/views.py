@@ -111,7 +111,7 @@ def magcli_magasin(mag_id, **kwargs):
 #        Magasin = get_model('magasins','Magasin')
 #        magasin = Magasin.objects.get(pk=self.mag)
 #        print magasin.pk
-#        magasin_nom = magasin.name
+#        magasin_nom = magasin.nom
 #        magasin_adresse = magasin.adresse
 #        magasin_cp = magasin.cps
 #        magasin_ville = magasin.ville

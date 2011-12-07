@@ -51,7 +51,7 @@ class EvenementsMessages:
         print "Liste emails: ", self.liste_emails
         Magasin = get_model('magasins','Magasin')
         magasin = Magasin.objects.get(pk=self.mag)
-        magasin_nom = magasin.name
+        magasin_nom = magasin.nom
         magasin_adresse = magasin.adresse
         magasin_cp = magasin.cp
         magasin_ville = magasin.ville
@@ -78,7 +78,3 @@ class EvenementsMessages:
         send_mail('Nouvelle offre FLASH', texte_contenu, 'Alain <claudine.abraham8@orange.fr>', ['youpsla@gmail.com'])
         print "Email envoyé"
         #msg = EmailMultiAlternatives ('Nouvelle offre FLASH', texte_contenu, 'youpsla@free.fr', 'youpsla@free.fr')
-
-test = EvenementsMessages(65,14)
-test.evenement_match_client()
-test.evenement_envoi_email()
