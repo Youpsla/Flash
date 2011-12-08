@@ -8,7 +8,7 @@ from evenements.forms import EvenementForm
 from django.shortcuts import get_object_or_404
 from evenements.models import Evenement
 from magasins.models import Magasin
-from commandes.tests import EvenementsMessages
+from commandes.routage import EvenementsMessages
 
 class EvenementCreateView(CreateView):
     form_class = EvenementForm
