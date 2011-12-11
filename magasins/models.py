@@ -4,11 +4,10 @@ from django.contrib.auth.models import User
 from django.forms.widgets import RadioSelect
 from django.forms import ModelForm
 from django import forms
-from geolocalisation import get_lat_lng
 from django.forms import widgets
 from decimal import Decimal
 from django.db.models import signals
-from magasins.signals import change_watcher
+
 from django.db.models import get_model
 from categories.models import Categories
 
@@ -29,11 +28,15 @@ class Magasin (models.Model):
     def magasin_evenements(self):
         Evenement = get_model('evenements','Evenement')
         return Evenement.objects.filter(magasin=self)
-    
 
+
+from magasins.signals import change_watcher
 for signal in (signals.post_init, signals.post_save):
     signal.connect(change_watcher, sender = Magasin, dispatch_uid=signal)
 
+
+
+from commandes.geolocalisation import get_lat_lng
 class MagasinForm(ModelForm):
     class BlankIntField(forms.IntegerField):
         def clean(self, value):
@@ -49,7 +52,7 @@ class MagasinForm(ModelForm):
         exclude = ('by',)
 
     def clean(self):
-        print "appel methode clean"
+        print "appel methode Clean"
         if self.cleaned_data.has_key('adresse') and self.cleaned_data.has_key('cp') and self.cleaned_data.has_key('ville'):
             print self.cleaned_data['adresse']
             print self.cleaned_data['cp']

@@ -30,18 +30,3 @@ class Customer (models.Model):
     
     # def __unicode__(self):
         # return unicode(self.Customer)
-
-class TestUser (models.Model):
-    email_adresse = models.EmailField(max_length=255, unique=True)
-    date_inscription = models.DateTimeField(auto_now_add=True)
-    date_modification = models.DateTimeField(auto_now=True)
-    
-
-class TestAppetances (models.Model):
-    client = models.IntegerField(max_length=11, unique=True)
-    choix = models.BooleanField()
-    date_inscription = models.DateTimeField(auto_now_add=True)
-    date_modification = models.DateTimeField(auto_now=True)
-    
-    def __unicode__(self):
-        return unicode(self.Customer)

@@ -1,79 +1,75 @@
 # -*- coding: utf-8 -*-
-from commandes.models import Magcli
+import urllib, urllib2, json
+from django.utils.encoding import smart_str
 from django.db.models import get_model
 
-from django_mailer import send_mail
-from django.template.loader import get_template
-from django.template import Context
-import locale
+#Version avec traitement unitaire
+def maj_totale_mag_clients():
+    Magasin = get_model('magasins','Magasin')
+    Customer = get_model('clients','Customer')
+    Magcli = get_model('commandes','Magcli')
+    clients = Customer.objects.all()
+    mags = Magasin.objects.all()
+    print "Nombre de magasins: ", len(mags)
+    #print "Nombre de clients: ", len(clients)
+    for m in mags:
+        origins = ''
+        destination = ''
+        origins = "%s,%s" % (m.lat, m.lng)
+        org = urllib.quote_plus(smart_str(origins))
+        for c in clients:
+            destination = "%s,%s" % (c.lat_home, c.lng_home)
+            dest = urllib.quote_plus(smart_str(destination))
+            url = 'http://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&mode=driving&language=fr-FR&sensor=false' % (org, dest)
+            response = urllib2.urlopen(url).read()
+            result = json.loads(response)
+            if result['status'] == 'OK':
+                temps = result['rows'][0]['elements'][0]['duration']['value']
+                distance = result['rows'][0]['elements'][0]['distance']['value']
+                try:
+                    record = Magcli.objects.get(magasin=m, client=c)
+                    pk=record.pk
+                    tmp = Magcli(pk=pk, magasin=m, client=c, distance_home=distance, temps_home_pied=temps)
+                    print "Enregistrement existant: ", m.pk, "-", c.pk
+                    tmp.save()
+                except:
+                    print "Enregistrement non trouvé"
+                    tmp = Magcli(magasin=m, client=c, distance_home=distance, temps_home_pied=temps)
+                    tmp.save()
+            else:
+                print "probleme"
+                
+maj_totale_mag_clients()
 
-from django.db.models import F
-from django.db.models import Q
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-
-class EvenementsMessages:
-    """
-    Classe qui fournit mes méthodes suivantes:
-        - evenement_match_client
-        - evenement_envoi_email
-    """
-    
-    #@method_decorator(login_required)
-    def __init__(self, magasin_id, evenement_id):
-        self.mag = magasin_id
-        self.eve = evenement_id
-        self.liste_emails = []
-    
-    #@method_decorator(login_required)
-    def evenement_match_client(self):
-        """
-        Fonction qui fait le raprochement entre un évènement et les clients qui y sont élligibles.
-        Les criètres sont les distances home et pro ainsi que la catégorie.
-        Argument : magasin_id
-        """
-        #liste_clients = Magcli.objects.filter(magasin=65)
-        liste_clients = Magcli.objects.filter(Q(magasin=self.mag), Q(distance_home__gt= F('client__distance_max_home')) | Q(distance_pro__gt= F('client__distance_max_pro')), Q(magasin__category = F('client__category'))).select_related('client')
-        print liste_clients
-        for i in liste_clients:
-            print "Distance_max_home %s - Distance_home %s" % (i.client.distance_max_home, i.distance_home)
-            print "Distance_max_pro %s - Distance_pro %s" % (i.client.distance_max_pro, i.distance_pro)
-            print i.magasin.pk
-        liste_emails=[]
-        for i in liste_clients:
-            self.liste_emails.append(i.client.email_adresse)
-    
-    #@method_decorator(login_required)
-    def evenement_envoi_email(self):
-        """
-        Fonction de composition et d'envoi des Emails après l'activation d'un évènement
-        """
-        print "Liste emails: ", self.liste_emails
-        Magasin = get_model('magasins','Magasin')
-        magasin = Magasin.objects.get(pk=self.mag)
-        magasin_nom = magasin.nom
-        magasin_adresse = magasin.adresse
-        magasin_cp = magasin.cp
-        magasin_ville = magasin.ville
-        
-        Evenement = get_model('evenements','Evenement')
-        evenement = Evenement.objects.get(pk=self.eve)
-        locale.setlocale(locale.LC_ALL, '')
-        jour = evenement.date_debut.strftime('%A %d %B')
-        heure_debut = '%sH%s' % (evenement.date_debut.strftime('%H'), evenement.date_debut.strftime('%M'))
-        heure_fin = '%sH%s' % (evenement.date_fin.strftime('%H'), evenement.date_fin.strftime('%M'))
-        print evenement.date_debut
-        print evenement.date_debut.strftime('%A %d %B %H %M')
-        d = Context({'magasin_nom' : magasin_nom,
-                     'magasin_adresse' : magasin_adresse,
-                     'magasin_cp' : '%05d' % magasin_cp,
-                     'magasin_ville' : magasin_ville,
-                     'jour' : jour,
-                     'heure_debut' : heure_debut,
-                     'heure_fin' : heure_fin,
-                     })
-        texte = get_template('emails/evenement.txt')
-        texte_contenu = texte.render(d)
-        print texte_contenu
-        send_mail('Nouvelle offre FLASH', texte_contenu, 'Alain <claudine.abraham8@orange.fr>', ['youpsla@gmail.com'])
-        print "Email envoyé"
+## Version avec traitement en batch
+#def maj_totale_mag_clients():
+#    Magasin = get_model('magasins','Magasin')
+#    Customer = get_model('clients','Customer')
+#    clients = Customer.objects.all()
+#    mags = Magasin.objects.all()
+#    print "Nombre de magasins: ", len(mags)
+#    print "Nombre de clients: ", len(clients)
+#    dic_maj = []
+#    for m in mags:
+#        counter = 0
+#        origins = ''
+#        destinations = ''
+#        origins = "%s,%s" % (m.lat, m.lng)
+#        org = urllib.quote_plus(smart_str(origins))
+#        for c in clients:
+#            dic_maj[counter] = {'mag_id' : m.pk, 'client_id' : c.pk}
+#            tmp_c = "%s,%s" % (c.lat_home, c.lng_home)
+#            if counter == 0:
+#                destinations = tmp_c
+#            else:
+#                destinations = destinations + "|" + tmp_c
+#            counter += 1
+#            if counter == 50 or counter == len(clients):
+#                dest = urllib.quote_plus(smart_str(destinations))
+#                url = 'http://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&mode=walking&language=fr-FR&sensor=false' % (org, dest)
+#                response = urllib2.urlopen(url).read()
+#                result = json.loads(response)
+#                print result
+#                print dic_maj
+#                destinations = ''
+#                counter = 0
