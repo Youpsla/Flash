@@ -98,6 +98,6 @@ class EvenementsMessages:
         send_mail('Nouvelle offre FLASH', texte_contenu, 'Alain <claudine.abraham8@orange.fr>', self.liste_emails)
         print "Email envoyé"
 
-test = EvenementsMessages(65,14)
-test.evenement_match_client()
-test.evenement_envoi_email()
+#test = EvenementsMessages(65,14)
+#test.evenement_match_client()
+#test.evenement_envoi_email()

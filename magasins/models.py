@@ -7,9 +7,23 @@ from django import forms
 from django.forms import widgets
 from decimal import Decimal
 from django.db.models import signals
+from django.dispatch import receiver
+from commandes.geolocalisation import magcli_magasin
 
 from django.db.models import get_model
 from categories.models import Categories
+
+class MagasinOwnerProfile(models.Model):
+    GENDER_CHOICES = (
+            ('M', 'Monsieur'),
+            ('MDE', 'Madame'),
+            ('MELLE', 'Mademoiselle'),
+        )
+    user = models.ForeignKey(User, unique=True)
+    genre = models.CharField(max_length=5, choices=GENDER_CHOICES)
+    nom = models.CharField(max_length=100, blank=True)
+    prenom = models.CharField(max_length=100, blank=True)
+    telephone = models.CharField(max_length=14, blank=True)
 
 class Magasin (models.Model):
     nom = models.CharField(max_length=255, verbose_name = "Raison sociale")
@@ -29,11 +43,19 @@ class Magasin (models.Model):
         Evenement = get_model('evenements','Evenement')
         return Evenement.objects.filter(magasin=self)
 
+@receiver(signals.post_save, sender=Magasin, dispatch_uid="Magasin_most_save")
+def Magasin_post_save(sender, instance, **kwargs):
+    if kwargs['created']==True:
+        etat='creation'
+        magcli_magasin(mag=instance, etat=etat)
+    elif kwargs['created']==False:
+        etat='update'
+        magcli_magasin(mag=instance, etat=etat)
 
-from magasins.signals import change_watcher
-for signal in (signals.post_init, signals.post_save):
-    signal.connect(change_watcher, sender = Magasin, dispatch_uid=signal)
-
+            
+#from magasins.signals import change_watcher
+#for signal in (signals.pre_save, signals.post_save):
+#    signal.connect(change_watcher, sender = Magasin, dispatch_uid=signal)
 
 
 from commandes.geolocalisation import get_lat_lng
@@ -69,16 +91,3 @@ class MagasinForm(ModelForm):
         else:
             pass
         return self.cleaned_data 
-
-
-class MagasinOwnerProfile(models.Model):
-    GENDER_CHOICES = (
-            ('M', 'Monsieur'),
-            ('MDE', 'Madame'),
-            ('MELLE', 'Mademoiselle'),
-        )
-    user = models.ForeignKey(User, unique=True)
-    genre = models.CharField(max_length=5, choices=GENDER_CHOICES)
-    nom = models.CharField(max_length=100, blank=True)
-    prenom = models.CharField(max_length=100, blank=True)
-    telephone = models.CharField(max_length=14, blank=True)

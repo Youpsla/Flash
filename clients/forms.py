@@ -6,7 +6,7 @@ from clients.models import Customer
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.localflavor.fr.forms import FRPhoneNumberField
 from django.contrib.localflavor.fr.forms import FRZipCodeField
-from geolocalisation import get_lat_lng
+from commandes.geolocalisation import get_lat_lng
 from categories.models import Categories
 
 

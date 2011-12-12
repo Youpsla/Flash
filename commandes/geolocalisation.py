@@ -10,15 +10,7 @@ def distance_oiseau((x1, y1), (x2, y2)):
     if (x1, y1) == (x2, y2): 
         return 0 
     d = geopy_distance.distance((x1, y1), (x2, y2))  
-    return d.meters
-
-def liste_clients(mag):
-    liste_clients = []
-    Clients = get_model('clients','Customer')
-    liste_clients = Clients.objects.filter(category=mag.category)
-    print "%s clients sont dans la même catégorie que le magasin" % len(liste_clients)
-    return liste_clients
-
+    return d.meters 
 
 def get_lat_lng(location):
     location = urllib.quote_plus(smart_str(location))
@@ -34,23 +26,35 @@ def get_lat_lng(location):
         else:
             lat = result['results'][0]['geometry']['location']['lat']
             lng = result['results'][0]['geometry']['location']['lng']
+            print lat, lng
     else:
         raise forms.ValidationError("Erreure de geolocalisation de votre adresse")
     return lat, lng
+
+def liste_clients(mag):
+    liste_clients = []
+    Clients = get_model('clients','Customer')
+    liste_clients = Clients.objects.filter(category=mag.category)
+    print "%s clients sont dans la même catégorie que le magasin" % len(liste_clients)
+    return liste_clients
     
 def routes(**kwargs):
-    mlat = kwargs['mlat']
-    mlng = kwargs['mlng']
-    clat = kwargs['clat']
-    clng = kwargs['clng']
-    routeType = kwargs['types']
-    data = {'locations':({'latLng':{'lat':mlat, 'lng':mlng}, 'latLng':{'lat':clat, 'lng':clng}}),'options' : {'allToAll': 'false', 'unit':'k', 'routeType': routeType}}
+    mlat = str(kwargs['mlat'])[0:10]
+    mlng = str(kwargs['mlng'])[0:10]
+    clat = str(kwargs['clat'])
+    clng = str(kwargs['clng'])
+    print "Coordonnées magasins", mlat, mlng
+    print "Coordonnées client", clat, clng
+    routeType = kwargs['routeType']
+    data = {'locations':[{'latLng':{'lat':mlat, 'lng':mlng}}, {'latLng':{'lat':clat, 'lng':clng}}],'options' : {'allToAll': 'false', 'unit':'k', 'routeType': routeType}}
+    print data
     #data = {'locations' : [{'street' : "1 rue de la paix", 'city' : 'Paris', 'postalCode' : '75001', 'country': 'France'},{'street' : "10 rue royale", 'city' : 'Paris', 'postalCode' : '75001', 'country': 'France'}],'options' : {'allToAll': 'false', 'unit':'k', 'routeType': 'fastest'}}
     data = json.JSONEncoder().encode(data)
     url = 'http://www.mapquestapi.com/directions/v1/routematrix?key=Fmjtd%7Cluu2n1u725%2Caa%3Do5-ha1s0&inFormat=json'
     req = urllib2.Request(url, data, {"Content-type": "application/json"})
     response = urllib2.urlopen(req).read()
     result = json.loads(response)
+    print result
     #print json.dumps(result, indent=2)
     distance = int(result['distance'][1]*1000)
     temps = result['time'][1]
@@ -70,8 +74,9 @@ def magcli_magasin(mag, etat, **kwargs):
     Magcli = get_model('commandes','Magcli')
     print "macli_magasin: ", etat
     clients=liste_clients(mag)
+    print clients
     for c in clients:
-        print c.pk
+        print "PK client:", c.pk
         distance_home = distance_oiseau((mag.lat,mag.lng),(c.lat_home, c.lng_home))
         distance_pro = distance_oiseau((mag.lat,mag.lng),(c.lat_pro, c.lng_pro))
         if distance_home > 0 and distance_home < 10000:
@@ -85,15 +90,15 @@ def magcli_magasin(mag, etat, **kwargs):
         if etat=="creation":
             print "Magcli : création"
             mc = Magcli(client=c, magasin=mag, distance_home=distance_home, distance_pro=distance_pro, match_category=1,
-                       distance_home_voiture=distance_home_voiture,
-                       distance_pro_voiture=distance_pro_voiture,
-                       distance_home_pied=distance_home_pied,
-                       distance_pro_pied=distance_pro_pied,
-                       temps_home_voiture=temps_home_voiture,
-                       temps_pro_voiture=temps_pro_voiture,
-                       temps_home_pied=temps_home_pied,
-                       temps_pro_pied=temps_pro_pied
-                       )
+                        distance_home_voiture=distance_home_voiture,
+                        distance_pro_voiture=distance_pro_voiture,
+                        distance_home_pied=distance_home_pied,
+                        distance_pro_pied=distance_pro_pied,
+                        temps_home_voiture=temps_home_voiture,
+                        temps_pro_voiture=temps_pro_voiture,
+                        temps_home_pied=temps_home_pied,
+                        temps_pro_pied=temps_pro_pied
+                        )
             mc.save()
         elif etat == "update":
             print "Magcli : update"
