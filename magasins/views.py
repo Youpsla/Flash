@@ -31,9 +31,8 @@ class MagasinCreateView(CreateView):
 def redirectprofile(request):
         try: 
                 profile = request.user.get_profile() 
-                #return HttpResponseRedirect(reverse('home_shop'))
-                return HttpResponseRedirect(reverse('home_shop'))
+                return HttpResponseRedirect(reverse('magasin'))
         except: 
-                print "profil NOT find"
+                print "profil NOT found"
                 return HttpResponseRedirect(reverse('profiles_create_profile'))
     

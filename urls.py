@@ -21,26 +21,30 @@ admin.autodiscover()
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^clients/$', InscriptionWizard.as_view([Step1Form, Step2Form, Step3Form, Step4Form, Step5Form])),
-    # URL PATTERN VALIDES A NE PAS TOUCHER
     (r'^accounts/', include('registration.backends.default.urls')),
     (r'magasin/(?P<magasin_id>\d+)/evenement/new/$', EvenementCreateView.as_view(model=Evenement)),
     url(r'magasin/(?P<magasin_id>\d+)/evenement/(?P<pk>\d+)/$', DetailView.as_view(model=Evenement), name='evenement_details'),
     url(r'magasin/(?P<magasin_id>\d+)/evenement/(?P<pk>\d+)/activer$', 'evenements.views.activation', name='evenement_activer'),
     url(r'magasin/(?P<magasin_id>\d+)/evenement/(?P<pk>\d+)/supprimer$', DeleteView.as_view(model=Evenement, success_url="/magasin/liste"), name='evenement_supprimer'),
-    url(r"magasin/ajouter/$", MagasinCreateView.as_view(model=Magasin, success_url="/magasins/liste"), name='magasin_ajouter'),
+    url(r"magasin/ajouter/$", MagasinCreateView.as_view(model=Magasin, success_url="/magasin/liste"), name='magasin_ajouter'),
     url(r"magasin/(?P<magasin_id>\d+)/evenement/(?P<pk>\d+)/modifier$", EvenementUpdateView.as_view(model=Evenement, form_class=EvenementForm), name='evenement_modifier'),
     url(r"magasin/(?P<pk>\d+)/modifier/$", UpdateView.as_view(model=Magasin, success_url="/magasin/liste", form_class=MagasinForm), name='magasin_modifier'),
     url(r"magasin/(?P<pk>\d+)/supprimer/$", DeleteView.as_view(model=Magasin, success_url="/magasin/liste"), name='magasin_supprimer'),
     url(r'^magasin/liste/?$', 'magasins.views.user_magasins', name='user_magasins'),
     # FIN DES PATTERNS A NE PAS TOUCHER
-    url(r'^shop',
-        direct_to_template,
-        {'template': 'magasins/home_shop.html',}, name='home_shop',),
-    url(r'^owner_profil/$','magasins.views.redirectprofile',),
-    (r'^profiles/', include('profiles.urls')),
     url(r'^magasin/$',
         direct_to_template,
-        {'template': 'magasins/magasin_base.html', 'extra_context' : {'nom_site' : Site.objects.get_current()}},
-        name='index',),
-    
+        {'template': 'magasins/home_shop.html',}, name='magasin',),
+    url(r'^owner_profil/$','magasins.views.redirectprofile',),
+    (r'^profiles/', include('profiles.urls')),
+#    url(r'^magasin/$',
+#        direct_to_template,
+#        {'template': 'magasins/magasin_base.html', 'extra_context' : {'nom_site' : Site.objects.get_current()}},
+#        name='index',),  
 )
+from django.conf import settings
+
+if 'rosetta' in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+        url(r'^rosetta/', include('rosetta.urls')),
+    )

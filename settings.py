@@ -1,7 +1,10 @@
 # Django settings for flash project.
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
+
+UNIFORM_FAIL_SILENTLY = not 'DEBUG'
 DEBUG = True
+
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -69,7 +72,7 @@ STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
-STATICFILES_DIRS = ( 'C:/dev/html/flash/static',
+STATICFILES_DIRS = ( 'C:/dev/flash/html/flash/static',
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -99,18 +102,19 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 INTERNAL_IPS = ('127.0.0.1','localhost')
 
 ROOT_URLCONF = 'Flash.urls'
 
-TEMPLATE_DIRS = ( 'C:/dev/html/flash/',
+TEMPLATE_DIRS = ( 'C:/dev/flash/html/flash/',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS += (
      'django.core.context_processors.request',
+     
 ) 
 
 
@@ -135,6 +139,8 @@ LOGIN_REDIRECT_URL = '/owner_profil/'
 
 AUTH_PROFILE_MODULE = 'magasins.MagasinOwnerProfile'
 
+SESSION_COOKIE_AGE = 2500
+
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
     # 'SHOW_TOOLBAR_CALLBACK': None,
@@ -155,10 +161,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'south',
     'clients',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
     'categories',
     'magasins',
     'registration',
@@ -167,7 +170,9 @@ INSTALLED_APPS = (
     'commandes',
     'django_mailer',
     #'djangotasks',
-    'debug_toolbar',
+    #'debug_toolbar',
+    'rosetta',
+    'uni_form'
 
 )
 

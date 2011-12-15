@@ -5,6 +5,7 @@ from django import forms
 import urllib, urllib2, json
 from django.utils.encoding import smart_str
 from django.db.models import get_model
+    
 
 def distance_oiseau((x1, y1), (x2, y2)): 
     if (x1, y1) == (x2, y2): 
@@ -97,7 +98,8 @@ def magcli_magasin(mag, etat, **kwargs):
                         temps_home_voiture=temps_home_voiture,
                         temps_pro_voiture=temps_pro_voiture,
                         temps_home_pied=temps_home_pied,
-                        temps_pro_pied=temps_pro_pied
+                        temps_pro_pied=temps_pro_pied,
+                        match = 1,
                         )
             mc.save()
         elif etat == "update":
@@ -121,5 +123,6 @@ def magcli_magasin(mag, etat, **kwargs):
                 magcli_with_pk.temps_pro_pied=temps_pro_pied
             magcli_with_pk.distance_home = distance_home
             magcli_with_pk.distance_pro = distance_pro
+            magcli_with_pk.match = 1
             magcli_with_pk.save()
 

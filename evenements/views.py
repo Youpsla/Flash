@@ -74,10 +74,16 @@ def activation(request, **kwargs):
     evenement.save()
     try:
         messages = EvenementsMessages(magasin_id, pk)
+    except:
+        print "evenement/views : Erreur dans la fonction EvenementsMessages"
+    try:
         messages.evenement_match_client()
+    except:
+        print "evenement/views : Erreur dans la fonction evenement_match_client"
+    try:
         messages.evenement_envoi_email()
     except:
-        print "Erreur dans l'envoi des messages"
+        print "evenement/views : Erreur dans la fonction evenement_envoi_email"
     return HttpResponseRedirect(reverse('evenement_details', args=[int(magasin_id), int(pk)]))
 
 

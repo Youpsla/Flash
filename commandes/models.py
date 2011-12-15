@@ -14,6 +14,7 @@ class Magcli (models.Model):
     temps_pro_pied = models.IntegerField(null=True)
     temps_pro_voiture = models.IntegerField(null=True)
     match_category = models.NullBooleanField (null=True)
+    match = models.NullBooleanField (null=True)
     
     class Meta:
         unique_together = ("client", "magasin")

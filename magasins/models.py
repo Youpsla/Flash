@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
-from django.forms.widgets import RadioSelect
 from django.forms import ModelForm
 from django import forms
 from django.forms import widgets
@@ -9,7 +8,6 @@ from decimal import Decimal
 from django.db.models import signals
 from django.dispatch import receiver
 from commandes.geolocalisation import magcli_magasin
-
 from django.db.models import get_model
 from categories.models import Categories
 
@@ -31,7 +29,7 @@ class Magasin (models.Model):
     date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)
     adresse = models.CharField(max_length=255)
-    cp = models.IntegerField(max_length=5, verbose_name = "Code postal")
+    cp = models.CharField(max_length=5, verbose_name = "CP")
     ville = models.CharField(max_length=255)
     pays = models.CharField(max_length=128, default='France')
     category = models.ForeignKey(Categories, verbose_name = "Catégorie")
@@ -57,9 +55,40 @@ def Magasin_post_save(sender, instance, **kwargs):
 #for signal in (signals.pre_save, signals.post_save):
 #    signal.connect(change_watcher, sender = Magasin, dispatch_uid=signal)
 
-
+from uni_form.helper import FormHelper
+from uni_form.layout import Submit, Layout, Fieldset, ButtonHolder
+from django.contrib.localflavor.fr.forms import FRZipCodeField
 from commandes.geolocalisation import get_lat_lng
+
 class MagasinForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_class = 'blueForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = ''
+        self.helper.form_id = 'id-magasinForm'
+        self.style= 'inline'
+        self.helper.layout = Layout(
+            Fieldset(
+                     'Formulaire Magasin',
+                     'nom',
+                     'nom_commercial',
+                     'adresse',
+                     'cp',
+                     'ville',
+                     'pays',
+                     'category',
+                     'lat',
+                     'lng',
+                     ),
+            ButtonHolder(
+                Submit('submit', 'Envoyer')
+                )
+                )
+
+        #self.helper.add_input(Submit('submit', 'Envoyer'))
+        return super(MagasinForm, self).__init__(*args, **kwargs)
+    
     class BlankIntField(forms.IntegerField):
         def clean(self, value):
             if not value:
@@ -67,7 +96,8 @@ class MagasinForm(ModelForm):
             return Decimal(value)
     lat = BlankIntField(widget = widgets.HiddenInput())
     lng = BlankIntField(widget = widgets.HiddenInput())
-    category = forms.ModelChoiceField(widget=RadioSelect, queryset=Categories.objects.all().order_by('nom'))
+    category = forms.ModelChoiceField(widget=forms.Select, queryset=Categories.objects.all().order_by('nom'))
+    cp = FRZipCodeField()
 
     class Meta:
         model = Magasin

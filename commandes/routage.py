@@ -7,8 +7,8 @@ from django.template.loader import get_template
 from django.template import Context
 import locale
 
-from django.db.models import F
-from django.db.models import Q
+#from django.db.models import F
+#from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -37,7 +37,7 @@ class EvenementsMessages:
         self.maglat = self.magasin.lat
         self.maglng = self.magasin.lng
     
-    #@method_decorator(login_required)
+    @method_decorator(login_required)
     def dict_emails_distances(self):
         """
         Fonction qui fait le raprochement entre un évènement et les clients qui y sont élligibles.
@@ -48,7 +48,8 @@ class EvenementsMessages:
         """
         
         #Sélection des clients
-        liste_clients = Magcli.objects.filter(Q(magasin=self.mag), Q(distance_home__gt= F('client__distance_max_home')) | Q(distance_pro__gt= F('client__distance_max_pro')), Q(magasin__category = F('client__category'))).select_related('client')
+        #liste_clients = Magcli.objects.filter(Q(magasin=self.mag), Q(distance_home__gt= F('client__distance_max_home')) | Q(distance_pro__gt= F('client__distance_max_pro')), Q(magasin__category = F('client__category'))).select_related('client')
+        liste_clients = Magcli.objects.filter(magasin=self.mag, match = 1).select_related('client')     
         print liste_clients
 #        for i in liste_clients:
 #            print "Distance_max_home %s - Distance_home %s" % (i.client.distance_max_home, i.distance_home)
@@ -59,10 +60,7 @@ class EvenementsMessages:
         print "Méthode liste_destinataires - Nombre de destinataires: ", len(self.dict_destinataires)
 
 
-        
-
-
-    #@method_decorator(login_required)
+    @method_decorator(login_required)
     def evenement_envoi_email(self):
         """
         Fonction de composition et d'envoi des Emails après l'activation d'un évènement
