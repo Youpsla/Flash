@@ -6,6 +6,7 @@ from magasins.models import Magasin, MagasinForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic.list_detail import object_list
 from django.views.generic import CreateView
+import logging
 
 
 
@@ -25,7 +26,6 @@ class MagasinCreateView(CreateView):
         obj.by=self.request.user
         obj.save()
         return HttpResponseRedirect(reverse('user_magasins'))
-
 
 @login_required
 def redirectprofile(request):

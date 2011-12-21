@@ -102,7 +102,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 INTERNAL_IPS = ('127.0.0.1','localhost')
@@ -170,9 +170,9 @@ INSTALLED_APPS = (
     'commandes',
     'django_mailer',
     #'djangotasks',
-    #'debug_toolbar',
+    'debug_toolbar',
     'rosetta',
-    'uni_form'
+    'bootstrap'
 
 )
 

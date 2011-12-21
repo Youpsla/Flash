@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 from Flash.magasins.models import Magasin
-from django.forms import ModelForm
+from datetime import datetime
 #from django.db.models import signals
 
 class Evenement (models.Model):
@@ -15,6 +15,17 @@ class Evenement (models.Model):
     baseline = models.CharField(max_length=500)
     mentions = models.TextField()
     activation = models.BooleanField(editable=False)
+    
+    
+    class Meta:
+        ordering = ['-date_debut']
+    
+    
+    @property
+    def est_passe(self):
+        if datetime.now() > self.date_fin:
+            return True
+        return False
 
 
     def clean(self):

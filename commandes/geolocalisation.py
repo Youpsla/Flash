@@ -13,7 +13,27 @@ def distance_oiseau((x1, y1), (x2, y2)):
     d = geopy_distance.distance((x1, y1), (x2, y2))  
     return d.meters 
 
+#def get_lat_lng(location):
+#    location = urllib.quote_plus(smart_str(location))
+#    url = 'http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false' % location
+#    response = urllib2.urlopen(url).read()
+#    try:
+#        result = json.loads(response)
+#    except:
+#        raise forms.ValidationError("Problème d'accès au service de géolocalisation. Veuillez réessayer dans 1 minute")
+#    if result['status'] == 'OK':
+#        if result['results'][0].has_key('partial_match'):
+#            raise forms.ValidationError("Erreure de geolocalisation de votre adresse. Mauvaise concordance rue/cp/ville")
+#        else:
+#            lat = result['results'][0]['geometry']['location']['lat']
+#            lng = result['results'][0]['geometry']['location']['lng']
+#            print lat, lng
+#    else:
+#        raise forms.ValidationError("Erreure de geolocalisation de votre adresse")
+#    return lat, lng
+
 def get_lat_lng(location):
+    results = {}
     location = urllib.quote_plus(smart_str(location))
     url = 'http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false' % location
     response = urllib2.urlopen(url).read()
@@ -23,14 +43,17 @@ def get_lat_lng(location):
         raise forms.ValidationError("Problème d'accès au service de géolocalisation. Veuillez réessayer dans 1 minute")
     if result['status'] == 'OK':
         if result['results'][0].has_key('partial_match'):
-            raise forms.ValidationError("Erreure de geolocalisation de votre adresse. Mauvaise concordance rue/cp/ville")
+            results['status']=0
         else:
             lat = result['results'][0]['geometry']['location']['lat']
             lng = result['results'][0]['geometry']['location']['lng']
+            results['lat']=lat
+            results['lng']=lng
+            results['status']=1
             print lat, lng
     else:
-        raise forms.ValidationError("Erreure de geolocalisation de votre adresse")
-    return lat, lng
+        results['status']=0
+    return results
 
 def liste_clients(mag):
     liste_clients = []

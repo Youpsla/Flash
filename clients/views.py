@@ -5,6 +5,10 @@ from Flash.clients.models import Customer
 
 
 class InscriptionWizard(SessionWizardView):
+    
+    def get_template_names(self):
+        return 'clients/session_wizard.html'
+    
     def done(self, form_list, **kwargs):
         instance = Customer()
         for form in form_list:
@@ -16,3 +20,5 @@ class InscriptionWizard(SessionWizardView):
         return render_to_response('clients/index.html', {
             'form_data': [form.cleaned_data for form in form_list],
         })
+    
+        

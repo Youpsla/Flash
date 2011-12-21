@@ -10,9 +10,11 @@ from commandes.geolocalisation import get_lat_lng
 from categories.models import Categories
 
 
+
 class Step1Form(forms.Form):
-    email_adresse = forms.EmailField(max_length=255)
-    telephone = FRPhoneNumberField(required=False)
+
+    email_adresse = forms.EmailField(max_length=255, label='Adresse Email')
+    telephone = FRPhoneNumberField(required=False, label='Téléphone portable')
     
     def clean(self):
         """
@@ -26,13 +28,15 @@ class Step1Form(forms.Form):
                 Customer.objects.get(email_adresse=email)
             except ObjectDoesNotExist:
                 return self.cleaned_data
-            raise forms.ValidationError(u'Cette adresse Email est deja utilisée')
+            msg = u"Cette adresse Email est déjà utilisée"
+            self._errors["email_adresse"] = self.error_class([msg])
+
 
 class Step2Form(forms.Form):
     adresse = forms.CharField(max_length=255)
-    cp = FRZipCodeField()
-    ville = forms.CharField(max_length=255)
-    distance_max_home = forms.ChoiceField(widget=RadioSelect(), choices=(
+    cp = FRZipCodeField(label='Code postal')
+    ville = forms.CharField(widget=forms.TextInput , max_length=255)
+    distance_max_home = forms.ChoiceField(widget=forms.Select, help_text='Distance maximale entre cette adresse et le magasin', label='Distance max', choices=(
                      ('1','100 m'),
                      ('2','200 m'),
                      ('3','300 m'),
@@ -47,26 +51,33 @@ class Step2Form(forms.Form):
        Géocoding de l'adresse domicile
         
         """
-        
-        if 'adresse' in self.cleaned_data :
+        print "dede"
+        if 'adresse' in self.cleaned_data and 'cp' in self.cleaned_data and 'ville' in self.cleaned_data :
+            print "test presence"
             adresse = self.cleaned_data['adresse']
-        if 'cp' in self.cleaned_data :
             cp = self.cleaned_data['cp']
-        if 'ville' in self.cleaned_data :
-            ville = self.cleaned_data['cp']
-        location = '+'.join(filter(None, (adresse, cp, ville, 'FRANCE')))
-        (lat,lng) = get_lat_lng(location)
-        print (lat,lng)
-        self.cleaned_data['lat_home'] = lat
-        self.cleaned_data['lng_home'] = lng
-        return self.cleaned_data
+            ville = self.cleaned_data['ville']
+            location = '+'.join(filter(None, (adresse, cp, ville, 'FRANCE')))
+            results =  get_lat_lng(location)
+            print results
+            if results['status'] == 0:
+                msg = u"Problème de géolocalisation"
+                self._errors["adresse"] = self.error_class([msg])
+                self._errors["cp"] = self.error_class([msg])
+                self._errors["ville"] = self.error_class([msg])
+                #form.non_field_errors.widget.attrs['class'] = "field_error"
+                raise forms.ValidationError("Erreure de géolocalisation de votre adresse")
+            else:
+                self.cleaned_data['lat_home'] = results['lat']
+                self.cleaned_data['lng_home'] = results['lng']
+                return self.cleaned_data
 
  
 class Step3Form(forms.Form):
-    adresse_pro = forms.CharField(max_length=255, required=False)
+    adresse_pro = forms.CharField(max_length=255, label='Adresse professionnelle', required=False)
     cp_pro = FRZipCodeField(required=False)
     ville_pro = forms.CharField(max_length=255, required=False)
-    distance_max_pro = forms.ChoiceField(widget=RadioSelect(), choices=(
+    distance_max_pro = forms.ChoiceField(widget=forms.Select, help_text='Distance maximale entre cette adresse et le magasin', required=False, choices=(
                      ('1','100 m'),
                      ('3','300 m'),
                      ('5','500 m'),
@@ -81,18 +92,24 @@ class Step3Form(forms.Form):
        Géocoding de l'adresse pro
         
         """
-        if 'adresse_pro' in self.cleaned_data :
-            adresse_pro = self.cleaned_data['adresse_pro']
-        if 'cp_pro' in self.cleaned_data :
-            cp_pro = self.cleaned_data['cp_pro']
-        if 'ville_pro' in self.cleaned_data :
-            ville_pro = self.cleaned_data['cp_pro']
-        location = '+'.join(filter(None, (adresse_pro, cp_pro, ville_pro, 'FRANCE')))
-        (lat,lng) = get_lat_lng(location)
-        print (lat,lng)
-        self.cleaned_data['lat_pro'] = lat
-        self.cleaned_data['lng_pro'] = lng
-        return self.cleaned_data
+        if 'adresse_pro' in self.cleaned_data and 'cp_pro' in self.cleaned_data and 'ville_pro' in self.cleaned_data :
+            adresse = self.cleaned_data['adresse_pro']
+            cp = self.cleaned_data['cp_pro']
+            ville = self.cleaned_data['cp_pro']
+            location = '+'.join(filter(None, (adresse, cp, ville, 'FRANCE')))
+            results =  get_lat_lng(location)
+            print results
+            if results['status'] == 0:
+                msg = u"Problème de géolocalisation"
+                self._errors["adresse_pro"] = self.error_class([msg])
+                self._errors["cp_pro"] = self.error_class([msg])
+                self._errors["ville_pro"] = self.error_class([msg])
+                #form.non_field_errors.widget.attrs['class'] = "field_error"
+                raise forms.ValidationError("Erreure de géolocalisation de votre adresse")
+            else:
+                self.cleaned_data['lat_pro'] = results['lat']
+                self.cleaned_data['lng_pro'] = results['lng']
+                return self.cleaned_data
 
 class Step4Form(forms.Form):
     sms = forms.BooleanField(required=False)
@@ -121,10 +138,10 @@ class Step5Form(forms.Form):
                 return self.cleaned_data
 
         
-class TestUserForm(forms.Form):
-    email_adresse = forms.EmailField(max_length=255)
-    
-class TestAppetancesForm (forms.Form):
-    id = forms.IntegerField()
-    choix = forms.BooleanField()
+#class TestUserForm(forms.Form):
+#    email_adresse = forms.EmailField(max_length=255)
+#    
+#class TestAppetancesForm (forms.Form):
+#    id = forms.IntegerField()
+#    choix = forms.BooleanField()
     

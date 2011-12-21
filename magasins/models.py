@@ -10,6 +10,9 @@ from django.dispatch import receiver
 from commandes.geolocalisation import magcli_magasin
 from django.db.models import get_model
 from categories.models import Categories
+from datetime import datetime
+from django.contrib.localflavor.fr.forms import FRPhoneNumberField
+
 
 class MagasinOwnerProfile(models.Model):
     GENDER_CHOICES = (
@@ -19,9 +22,16 @@ class MagasinOwnerProfile(models.Model):
         )
     user = models.ForeignKey(User, unique=True)
     genre = models.CharField(max_length=5, choices=GENDER_CHOICES)
-    nom = models.CharField(max_length=100, blank=True)
-    prenom = models.CharField(max_length=100, blank=True)
-    telephone = models.CharField(max_length=14, blank=True)
+    nom = models.CharField(max_length=100)
+    prenom = models.CharField(max_length=100, verbose_name = "Prénom")
+    telephone = models.CharField(max_length=14, verbose_name = "Téléphone")
+    
+class MagasinOwnerProfileForm(ModelForm):
+    telephone = FRPhoneNumberField(label='Téléphone')
+
+    class Meta:
+        model = MagasinOwnerProfile
+        exclude = ('user',)
 
 class Magasin (models.Model):
     nom = models.CharField(max_length=255, verbose_name = "Raison sociale")
@@ -29,7 +39,7 @@ class Magasin (models.Model):
     date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)
     adresse = models.CharField(max_length=255)
-    cp = models.CharField(max_length=5, verbose_name = "CP")
+    cp = models.CharField(max_length=5)
     ville = models.CharField(max_length=255)
     pays = models.CharField(max_length=128, default='France')
     category = models.ForeignKey(Categories, verbose_name = "Catégorie")
@@ -40,7 +50,24 @@ class Magasin (models.Model):
     def magasin_evenements(self):
         Evenement = get_model('evenements','Evenement')
         return Evenement.objects.filter(magasin=self)
+    
+    @property
+    def is_locked(self):
+        etat = ''
+        Evenement = get_model('evenements','Evenement')
+        liste_evenements=Evenement.objects.filter(magasin=self)
+        for e in liste_evenements:
+            if e.activation == True:
+                if e.date_fin > datetime.now():
+                    etat = True
+                    break
+        else:
+            etat = False
+        print etat
+        return etat
 
+
+    
 @receiver(signals.post_save, sender=Magasin, dispatch_uid="Magasin_most_save")
 def Magasin_post_save(sender, instance, **kwargs):
     if kwargs['created']==True:
@@ -55,40 +82,11 @@ def Magasin_post_save(sender, instance, **kwargs):
 #for signal in (signals.pre_save, signals.post_save):
 #    signal.connect(change_watcher, sender = Magasin, dispatch_uid=signal)
 
-from uni_form.helper import FormHelper
-from uni_form.layout import Submit, Layout, Fieldset, ButtonHolder
+
 from django.contrib.localflavor.fr.forms import FRZipCodeField
 from commandes.geolocalisation import get_lat_lng
 
 class MagasinForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_class = 'blueForms'
-        self.helper.form_method = 'post'
-        self.helper.form_action = ''
-        self.helper.form_id = 'id-magasinForm'
-        self.style= 'inline'
-        self.helper.layout = Layout(
-            Fieldset(
-                     'Formulaire Magasin',
-                     'nom',
-                     'nom_commercial',
-                     'adresse',
-                     'cp',
-                     'ville',
-                     'pays',
-                     'category',
-                     'lat',
-                     'lng',
-                     ),
-            ButtonHolder(
-                Submit('submit', 'Envoyer')
-                )
-                )
-
-        #self.helper.add_input(Submit('submit', 'Envoyer'))
-        return super(MagasinForm, self).__init__(*args, **kwargs)
-    
     class BlankIntField(forms.IntegerField):
         def clean(self, value):
             if not value:
@@ -96,8 +94,9 @@ class MagasinForm(ModelForm):
             return Decimal(value)
     lat = BlankIntField(widget = widgets.HiddenInput())
     lng = BlankIntField(widget = widgets.HiddenInput())
-    category = forms.ModelChoiceField(widget=forms.Select, queryset=Categories.objects.all().order_by('nom'))
-    cp = FRZipCodeField()
+    category = forms.ModelChoiceField(widget=forms.Select , queryset=Categories.objects.all().order_by('nom'))
+    cp = FRZipCodeField(widget=forms.TextInput )
+
 
     class Meta:
         model = Magasin

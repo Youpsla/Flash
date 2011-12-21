@@ -4,18 +4,18 @@ from categories.models import Categories
 
 class Customer (models.Model):
 
-    email_adresse = models.EmailField(max_length=255, unique=True)
+    email_adresse = models.EmailField(max_length=255, unique=True, verbose_name = "Adresse Email")
     date_inscription = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)
     telephone = models.CharField(max_length=14, blank=True)
-    adresse = models.CharField(max_length=255, blank=True)
+    adresse = models.CharField(max_length=255)
     cp = models.CharField(max_length=5)
     ville = models.CharField(max_length=255)
     pays = models.CharField(max_length=128, default='France')
     distance_max_home = models.CharField(max_length=5)
     lat_home = models.DecimalField(max_digits=13, decimal_places=10)
     lng_home = models.DecimalField(max_digits=13, decimal_places=10)
-    adresse_pro = models.CharField(max_length=255, blank=True)
+    adresse_pro = models.CharField(max_length=255, verbose_name = "Adresse professionnelle", blank=True)
     cp_pro = models.CharField(max_length=5)
     ville_pro = models.CharField(max_length=255)
     pays_pro = models.CharField(max_length=128, default='France')
@@ -30,3 +30,5 @@ class Customer (models.Model):
     
     # def __unicode__(self):
         # return unicode(self.Customer)
+
+
