@@ -50,7 +50,6 @@ def get_lat_lng(location):
             results['lat']=lat
             results['lng']=lng
             results['status']=1
-            print lat, lng
     else:
         results['status']=0
     return results

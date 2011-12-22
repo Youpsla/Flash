@@ -26,7 +26,7 @@ class Customer (models.Model):
     email = models.BooleanField()
     phoneapp = models.BooleanField()
     category = models.ManyToManyField(Categories)
-    
+
     
     # def __unicode__(self):
         # return unicode(self.Customer)

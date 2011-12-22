@@ -18,7 +18,7 @@ class Step1Form(forms.Form):
     
     def clean(self):
         """
-       Test de l'unicité de l'aresse Email dans la base de données
+       Test de l'unicité de l'adresse Email dans la base de données
         
         """
         
@@ -51,21 +51,17 @@ class Step2Form(forms.Form):
        Géocoding de l'adresse domicile
         
         """
-        print "dede"
         if 'adresse' in self.cleaned_data and 'cp' in self.cleaned_data and 'ville' in self.cleaned_data :
-            print "test presence"
             adresse = self.cleaned_data['adresse']
             cp = self.cleaned_data['cp']
             ville = self.cleaned_data['ville']
             location = '+'.join(filter(None, (adresse, cp, ville, 'FRANCE')))
             results =  get_lat_lng(location)
-            print results
             if results['status'] == 0:
                 msg = u"Problème de géolocalisation"
                 self._errors["adresse"] = self.error_class([msg])
                 self._errors["cp"] = self.error_class([msg])
                 self._errors["ville"] = self.error_class([msg])
-                #form.non_field_errors.widget.attrs['class'] = "field_error"
                 raise forms.ValidationError("Erreure de géolocalisation de votre adresse")
             else:
                 self.cleaned_data['lat_home'] = results['lat']
@@ -98,13 +94,11 @@ class Step3Form(forms.Form):
             ville = self.cleaned_data['cp_pro']
             location = '+'.join(filter(None, (adresse, cp, ville, 'FRANCE')))
             results =  get_lat_lng(location)
-            print results
             if results['status'] == 0:
                 msg = u"Problème de géolocalisation"
                 self._errors["adresse_pro"] = self.error_class([msg])
                 self._errors["cp_pro"] = self.error_class([msg])
                 self._errors["ville_pro"] = self.error_class([msg])
-                #form.non_field_errors.widget.attrs['class'] = "field_error"
                 raise forms.ValidationError("Erreure de géolocalisation de votre adresse")
             else:
                 self.cleaned_data['lat_pro'] = results['lat']
@@ -124,24 +118,9 @@ class Step5Form(forms.Form):
        Test pour savoir si l'utilisateur a au moins sélectionné 5 appétances.
         
         """
-        d = self.cleaned_data.iteritems()
-        print d
-        
-        for k,v in d:
-            print k,v
-            print "Nbr de choix %s" % len(v)
-            if len(v) < 5:
-                raise forms.ValidationError(u'Vous devez sélectionner 5 choix au minimum')
-            else:
-                print self.cleaned_data
-                print "dada"
-                return self.cleaned_data
+        if len(self.cleaned_data['category']) < 5:
+            raise forms.ValidationError(u'Vous devez sélectionner 5 thématiques au minimum')
+        else:
+            return self.cleaned_data
 
-        
-#class TestUserForm(forms.Form):
-#    email_adresse = forms.EmailField(max_length=255)
-#    
-#class TestAppetancesForm (forms.Form):
-#    id = forms.IntegerField()
-#    choix = forms.BooleanField()
     
