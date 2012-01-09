@@ -103,20 +103,21 @@ class MagasinForm(ModelForm):
         exclude = ('by',)
 
     def clean(self):
-        print "appel methode Clean"
+        print "Appel methode Clean de la class MagasinForm"
         if self.cleaned_data.has_key('adresse') and self.cleaned_data.has_key('cp') and self.cleaned_data.has_key('ville'):
-            print self.cleaned_data['adresse']
-            print self.cleaned_data['cp']
-            print self.cleaned_data['ville']
             adresse = self.cleaned_data['adresse']
             cp = str(self.cleaned_data['cp'])
             ville = self.cleaned_data['ville']
+            print "Les données saisies sont: %s, %s, %s" % (adresse, cp, ville)
             location = '+'.join(filter(None, (adresse, cp, ville, 'FRANCE')))
-            (lat,lng) = get_lat_lng(location)
+            tmp = get_lat_lng(location)
+            lat = tmp['lat']
+            lng = tmp['lng']
+            status = tmp['status']
+            print "Résultat du géocodage : statut - %s, latitude - %s, longitude - %s" % (lat, status, lng)
             self.cleaned_data['lat'] = lat
             self.cleaned_data['lng'] = lng
-            print "Lattitude: ", lat
-            print "Longitude: ", lng
         else:
+            print "Des champs sont vides dans le formulaire : adresse, cd ou ville"
             pass
         return self.cleaned_data 

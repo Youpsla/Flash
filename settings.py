@@ -107,9 +107,9 @@ MIDDLEWARE_CLASSES = (
 
 INTERNAL_IPS = ('127.0.0.1','localhost')
 
-ROOT_URLCONF = 'Flash.urls'
+ROOT_URLCONF = 'Instantaneus.urls'
 
-TEMPLATE_DIRS = ( 'C:/dev/flash/html/flash/',
+TEMPLATE_DIRS = ( 'C:/dev/Instantaneus/Instantaneus/html',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS += (

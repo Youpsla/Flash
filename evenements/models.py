@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
-from Flash.magasins.models import Magasin
+from magasins.models import Magasin
 from datetime import datetime
 #from django.db.models import signals
 

@@ -17,6 +17,9 @@ def make_custom_datefield(f):
 #from uni_form.helper import FormHelper
 #from uni_form.layout import Submit, Layout, Fieldset, ButtonHolder
 class EvenementForm(forms.ModelForm):
+    class Meta:
+        model = Evenement
+        
     date_debut = forms.CharField(min_length = 10, widget = DateInput(format="%Y-%m-%d"))
     date_fin = forms.CharField(min_length = 10, widget = DateInput(format="%Y-%m-%d"))
     

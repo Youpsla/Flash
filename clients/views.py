@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render_to_response
 from django.contrib.formwizard.views import SessionWizardView
-from Flash.clients.models import Customer
+from clients.models import Customer
 
 
 class InscriptionWizard(SessionWizardView):

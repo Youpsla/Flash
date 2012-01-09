@@ -3,7 +3,6 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from evenements.forms import EvenementForm
 from django.shortcuts import get_object_or_404
 from evenements.models import Evenement
@@ -12,11 +11,9 @@ from commandes.routage import EvenementsMessages
 
 class EvenementCreateView(CreateView):
     form_class = EvenementForm
-
-    @method_decorator(login_required)
+    
     def dispatch(self, *args, **kwargs):
         self.magasin = get_object_or_404(Magasin, pk=kwargs['magasin_id'])
-        #print "id_magasin est: %s" % self.magasin.pk
         return super(EvenementCreateView, self).dispatch(*args, **kwargs)
     
     def form_valid(self, form, **kwargs):
@@ -38,12 +35,11 @@ class EvenementDetailView(DetailView):
 class EvenementUpdateView(UpdateView):
     form_class = EvenementForm
 
-    @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         self.magasin = get_object_or_404(Magasin, pk=kwargs['magasin_id'])
         #print "id_magasin est: %s" % self.magasin.pk
         return super(EvenementUpdateView, self).dispatch(*args, **kwargs)
-
+    
     def form_valid(self, form, **kwargs):
         magasin = Magasin.objects.get(pk=self.magasin.pk)
         self.tmp=form.save(commit=False)
