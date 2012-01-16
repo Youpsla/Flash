@@ -24,7 +24,6 @@ urlpatterns = patterns('',
     (r'^accounts/', include('registration.backends.default.urls')),
     (r'^clients/api/(?P<email>[a-zA-Z0-9._%-+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6})/$', 'clients.api.evenements_par_client'),
     #Clients
-    url('^$',direct_to_template,{'template': 'clients/clients_home.html'},),
     url(r'^clients/intro/$',direct_to_template,{'template': 'clients/clients_intro.html'},name='intro_client'),
     url(r'^clients/$', InscriptionWizard.as_view([Step1Form, Step2Form, Step3Form, Step4Form, Step5Form]), name='inscription_client'),
     #Evenements

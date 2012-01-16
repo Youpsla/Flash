@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
+
 # Django settings for flash project.
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 
-UNIFORM_FAIL_SILENTLY = not 'DEBUG'
+
 DEBUG = True
 
 TEMPLATE_DEBUG = DEBUG
@@ -72,7 +74,7 @@ STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
-STATICFILES_DIRS = ( 'C:/dev/flash/html/flash/static',
+STATICFILES_DIRS = ( 'C:/dev/Instantaneus/Instantaneus/html/static',
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -103,6 +105,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'django_requestlogging.middleware.LogSetupMiddleware',
 )
 
 INTERNAL_IPS = ('127.0.0.1','localhost')
@@ -172,7 +175,8 @@ INSTALLED_APPS = (
     #'djangotasks',
     'debug_toolbar',
     'rosetta',
-    'bootstrap'
+    'bootstrap',
+    'django_requestlogging',
 
 )
 
@@ -199,20 +203,63 @@ ANONYMOUS_USER_ID = -1
 # the site admins on every HTTP 500 error.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+#LOGGING = {
+#    'version': 1,
+#    'disable_existing_loggers': False,
+#    'handlers': {
+#        'mail_admins': {
+#            'level': 'ERROR',
+#            'class': 'django.utils.log.AdminEmailHandler'
+#        }
+#    },
+#    'loggers': {
+#        'django.request': {
+#            'handlers': ['mail_admins'],
+#            'level': 'ERROR',
+#            'propagate': True,
+#        },
+#    }
+#}
+import os
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+                'request':{
+                           '()': 'django_requestlogging.logging_filters.RequestFilter',
+                           }
+                },
+    'formatters': {
+            'verbose': {
+                    'format': '%(levelname)-8s %(remote_addr)-15s %(path_info)s %(asctime)s %(name)-20s %(funcName)-15s %(message)s'
+                    },
+            'simple': {
+                       'format': '%(levelname)s %(message)s'
+                       },
+            },
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
+            'normal': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filters': ['request'],
+            'formatter': 'verbose',
+            'filename': os.path.join('C:/dev/Instantaneus/Instantaneus/html/static', 'log', 'normal.log')
+            },
+            'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'filters': ['request'],
+            'formatter': 'verbose',
+            },
         },
-    }
-}
+    'loggers': {
+        'Instantaneus': {
+                    'handlers': ['normal','console'],
+                    'level': 'DEBUG',
+                    'filters': ['request'],
+                    'propagate': True,
+                    },
+                }
+           }
+
