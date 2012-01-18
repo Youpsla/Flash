@@ -105,7 +105,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'django_requestlogging.middleware.LogSetupMiddleware',
+    #'django_requestlogging.middleware.LogSetupMiddleware',
 )
 
 INTERNAL_IPS = ('127.0.0.1','localhost')
@@ -128,13 +128,15 @@ AUTHENTICATION_BACKENDS = (
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = 'smtp.orange.fr'
+EMAIL_HOST = 'smtp.free.fr'
 
-DEFAULT_FROM_EMAIL= 'claudine.abraham8@orange.fr'
+EMAIL_PORT = '587'
 
-#EMAIL_HOST_USER = 'youpsla@free.fr'
+DEFAULT_FROM_EMAIL= 'youpsla@free.fr'
 
-#EMAIL_HOST_PASSWORD = '372010'
+EMAIL_HOST_USER = 'youpsla@free.fr'
+
+EMAIL_HOST_PASSWORD = '372010'
 
 ACCOUNT_ACTIVATION_DAYS = 7
 
@@ -176,7 +178,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'rosetta',
     'bootstrap',
-    'django_requestlogging',
+    #'django_requestlogging',
 
 )
 
@@ -224,15 +226,16 @@ import os
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-                'request':{
-                           '()': 'django_requestlogging.logging_filters.RequestFilter',
-                           }
-                },
+    'disable_existing_loggers': True,
+#    'filters': {
+#                'request':{
+#                           '()': 'django_requestlogging.logging_filters.RequestFilter',
+#                           }
+#                },
     'formatters': {
             'verbose': {
-                    'format': '%(levelname)-8s %(remote_addr)-15s %(path_info)s %(asctime)s %(name)-20s %(funcName)-15s %(message)s'
+                    #'format': '%(levelname)-8s %(remote_addr)-15s %(path_info)s %(asctime)s %(name)-20s %(funcName)-15s %(message)s'
+                    'format': '%(levelname)-8s %(asctime)s %(name)-20s %(funcName)-15s %(message)s'
                     },
             'simple': {
                        'format': '%(levelname)s %(message)s'
@@ -242,14 +245,14 @@ LOGGING = {
             'normal': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filters': ['request'],
+            #'filters': ['request'],
             'formatter': 'verbose',
             'filename': os.path.join('C:/dev/Instantaneus/Instantaneus/html/static', 'log', 'normal.log')
             },
             'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'filters': ['request'],
+            #'filters': ['request'],
             'formatter': 'verbose',
             },
         },
@@ -257,7 +260,7 @@ LOGGING = {
         'Instantaneus': {
                     'handlers': ['normal','console'],
                     'level': 'DEBUG',
-                    'filters': ['request'],
+                    #'filters': ['request'],
                     'propagate': True,
                     },
                 }

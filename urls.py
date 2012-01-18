@@ -2,13 +2,12 @@ from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 from clients.views import InscriptionWizard
 from clients.forms import Step1Form, Step2Form, Step3Form, Step4Form, Step5Form
-from django.views.generic import DetailView
 from django.views.generic import UpdateView, DeleteView
 from magasins.models import Magasin
 from magasins.views import MagasinCreateView
 from magasins.models import MagasinForm
 from evenements.models import Evenement
-from evenements.views import EvenementCreateView, EvenementUpdateView
+from Instantaneus.evenements.views import EvenementCreateView, EvenementUpdateView, EvenementDetailView, EvenementDeleteView
 from evenements.forms import EvenementForm
 from magasins.models import MagasinOwnerProfileForm
 from django.contrib.auth.decorators import login_required
@@ -24,13 +23,15 @@ urlpatterns = patterns('',
     (r'^accounts/', include('registration.backends.default.urls')),
     (r'^clients/api/(?P<email>[a-zA-Z0-9._%-+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6})/$', 'clients.api.evenements_par_client'),
     #Clients
+    (r'^clients/api/(?P<email>[a-zA-Z0-9._%-+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6})/$', 'clients.api.evenements_par_client'),
+    url(r'^clients/apropos/$',direct_to_template,{'template': 'clients/clients_apropos.html'},name='clients_apropos'),
     url(r'^clients/intro/$',direct_to_template,{'template': 'clients/clients_intro.html'},name='intro_client'),
     url(r'^clients/$', InscriptionWizard.as_view([Step1Form, Step2Form, Step3Form, Step4Form, Step5Form]), name='inscription_client'),
     #Evenements
     (r'magasin/(?P<magasin_id>\d+)/evenement/new/$', login_required(EvenementCreateView.as_view(model=Evenement))),
-    url(r'magasin/(?P<magasin_id>\d+)/evenement/(?P<pk>\d+)/$', login_required(DetailView.as_view(model=Evenement)), name='evenement_details'),
+    url(r'magasin/(?P<magasin_id>\d+)/evenement/(?P<pk>\d+)/$', login_required(EvenementDetailView.as_view(model=Evenement)), name='evenement_details'),
     url(r'magasin/(?P<magasin_id>\d+)/evenement/(?P<pk>\d+)/activer$', 'evenements.views.activation', name='evenement_activer'),
-    url(r'magasin/(?P<magasin_id>\d+)/evenement/(?P<pk>\d+)/supprimer$', login_required(DeleteView.as_view(model=Evenement, success_url="/magasin/liste")), name='evenement_supprimer'),
+    url(r'magasin/(?P<magasin_id>\d+)/evenement/(?P<pk>\d+)/supprimer$', login_required(EvenementDeleteView.as_view(model=Evenement, success_url="/magasin/liste")), name='evenement_supprimer'),
     url(r"magasin/(?P<magasin_id>\d+)/evenement/(?P<pk>\d+)/modifier$", login_required(EvenementUpdateView.as_view(model=Evenement, form_class=EvenementForm)), name='evenement_modifier'),
     #Magasins
     url(r"magasin/ajouter/$", login_required(MagasinCreateView.as_view(model=Magasin, success_url="/magasin/liste")), name='magasin_ajouter'),
