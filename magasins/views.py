@@ -2,7 +2,7 @@
 # Create your views here.
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from magasins.models import Magasin, MagasinForm
+from Instantaneus.magasins.models import Magasin, MagasinForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic.list_detail import object_list
 from django.views.generic import CreateView

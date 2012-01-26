@@ -3,15 +3,15 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
-from evenements.forms import EvenementForm
+from Instantaneus.evenements.forms import EvenementForm
 from django.shortcuts import get_object_or_404
-from evenements.models import Evenement
-from magasins.models import Magasin
-from commandes.routage import Messages
+from Instantaneus.evenements.models import Evenement
+from Instantaneus.magasins.models import Magasin
+from Instantaneus.commandes.routage import Messages
 
 import logging
 logger = logging.getLogger(__name__)
-
+print __name__
 
 class EvenementCreateView(CreateView):
     form_class = EvenementForm
@@ -33,15 +33,14 @@ class EvenementCreateView(CreateView):
         return HttpResponseRedirect(reverse('evenement_details', args=[int(magasin_id), int(pk)]))
 
 class EvenementDetailView(DetailView):
-    print __name__
+    logger.debug('Affichage détaillé de l\'évènement: %s' % object)
     model=Evenement
     context_object_name='evenement'
-    logger.debug('Affichage détaillé de l\'évènement: %s' % object)
 
 
 class EvenementUpdateView(UpdateView):
     form_class = EvenementForm
-
+    logger.debug('Update de l\'évènement: %s' % object)
     def dispatch(self, *args, **kwargs):
         self.magasin = get_object_or_404(Magasin, pk=kwargs['magasin_id'])
         #print "id_magasin est: %s" % self.magasin.pk
@@ -74,7 +73,7 @@ def activation(request, **kwargs):
     evenement = get_object_or_404(Evenement, pk=pk)
     print evenement.__dict__
     magasin =  evenement.magasin
-
+    print 'Activation: %s' % __name__
     logger.debug('Début activation évènement: %s - magasin: %s' % (evenement.pk, magasin_id))
     messages = Messages(request, magasin, evenement)
     messages.liste_clients()

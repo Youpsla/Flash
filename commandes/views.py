@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from geopy import distance as geopy_distance
-from clients.models import Customer
-from commandes.models import Magcli
+from Instantaneus.clients.models import Customer
+from Instantaneus.commandes.models import Magcli
 from django.db.models import get_model
 
 

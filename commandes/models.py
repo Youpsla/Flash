@@ -18,6 +18,3 @@ class Magcli (models.Model):
     
     class Meta:
         unique_together = ("client", "magasin")
-    
-
-    

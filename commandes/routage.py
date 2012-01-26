@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from commandes.models import Magcli
+from Instantaneus.commandes.models import Magcli
 
 from django_mailer import send_mail
 from django.template.loader import get_template
@@ -66,13 +66,7 @@ class Messages(object):
                      'heure_debut' : heure_debut,
                      'heure_fin' : heure_fin,
                      })
-        print d
         texte = get_template('emails/evenement.txt')
         texte_contenu = texte.render(d)
-        print texte_contenu
         send_mail('Nouvelle offre FLASH', texte_contenu, 'Alain <youpsla@free.fr>', self.emails_liste)
         print "Email envoyé"
-
-#test = EvenementsMessages(65,14)
-#test.evenement_match_client()
-#test.evenement_envoi_email()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db.models import signals
-from commandes.geolocalisation import magcli_magasin
+from Instantaneus.commandes.geolocalisation import magcli_magasin
 
 pre_save={}
 flag = {}

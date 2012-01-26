@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from clients.models import Customer
+from Instantaneus.clients.models import Customer
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.localflavor.fr.forms import FRPhoneNumberField
 from django.contrib.localflavor.fr.forms import FRZipCodeField
-from commandes.geolocalisation import get_lat_lng
-from categories.models import Categories
+from Instantaneus.commandes.geolocalisation import get_lat_lng
+from Instantaneus.categories.models import Categories
 
 import logging
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class Step2Form(forms.Form):
             cp = self.cleaned_data['cp']
             ville = self.cleaned_data['ville']
             location = '+'.join(filter(None, (adresse, cp, ville, 'FRANCE')))
-            results =  get_lat_lng(location)
+            results =  get_lat_lng(location, cp)
             if results['status'] == 0:
                 logger.info('La géolocalisation a échouée')
                 msg = u"Problème de géolocalisation"
@@ -103,9 +103,9 @@ class Step3Form(forms.Form):
             logger.debug('Les champs adresse_pro, cp_pro et ville_pro sont valides')
             adresse = self.cleaned_data['adresse_pro']
             cp = self.cleaned_data['cp_pro']
-            ville = self.cleaned_data['cp_pro']
+            ville = self.cleaned_data['ville_pro']
             location = '+'.join(filter(None, (adresse, cp, ville, 'FRANCE')))
-            results =  get_lat_lng(location)
+            results =  get_lat_lng(location, cp)
             if results['status'] == 0:
                 logger.info('La géolocalisation a échouée')
                 msg = u"Problème de géolocalisation"

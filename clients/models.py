@@ -1,6 +1,8 @@
 from django.db import models
-from categories.models import Categories
+from Instantaneus.categories.models import Categories
 
+import logging
+logger = logging.getLogger(__name__)
 
 class Customer (models.Model):
 
@@ -30,5 +32,18 @@ class Customer (models.Model):
     
     # def __unicode__(self):
         # return unicode(self.Customer)
+
+from django.db.models import signals
+from django.dispatch import receiver
+from Instantaneus.commandes.geolocalisation import magcli_client
+
+@receiver(signals.post_save, sender=Customer, dispatch_uid="Customer_post_save_1")
+def Customer_post_save(sender, instance, **kwargs):
+    print 'signal Customer_post_save_1'
+    print instance
+    print 'pk', instance.pk
+    print 'email', instance.email
+    print 'category', instance.category
+    magcli_client(client=instance)
 
 

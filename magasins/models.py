@@ -7,9 +7,9 @@ from django.forms import widgets
 from decimal import Decimal
 from django.db.models import signals
 from django.dispatch import receiver
-from commandes.geolocalisation import magcli_magasin
+from Instantaneus.commandes.geolocalisation import magcli_magasin
 from django.db.models import get_model
-from categories.models import Categories
+from Instantaneus.categories.models import Categories
 from datetime import datetime
 from django.contrib.localflavor.fr.forms import FRPhoneNumberField
 
@@ -68,7 +68,7 @@ class Magasin (models.Model):
 
 
     
-@receiver(signals.post_save, sender=Magasin, dispatch_uid="Magasin_most_save")
+@receiver(signals.post_save, sender=Magasin, dispatch_uid="Magasin_post_save")
 def Magasin_post_save(sender, instance, **kwargs):
     if kwargs['created']==True:
         etat='creation'
@@ -84,7 +84,7 @@ def Magasin_post_save(sender, instance, **kwargs):
 
 
 from django.contrib.localflavor.fr.forms import FRZipCodeField
-from commandes.geolocalisation import get_lat_lng
+from Instantaneus.commandes.geolocalisation import get_lat_lng
 
 class MagasinForm(ModelForm):
     class BlankIntField(forms.IntegerField):
@@ -110,7 +110,7 @@ class MagasinForm(ModelForm):
             ville = self.cleaned_data['ville']
             print "Les données saisies sont: %s, %s, %s" % (adresse, cp, ville)
             location = '+'.join(filter(None, (adresse, cp, ville, 'FRANCE')))
-            tmp = get_lat_lng(location)
+            tmp = get_lat_lng(location, cp)
             lat = tmp['lat']
             lng = tmp['lng']
             status = tmp['status']

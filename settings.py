@@ -10,7 +10,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Alain - Admin Django', 'youpsla@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -165,13 +165,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'south',
-    'clients',
     'django.contrib.admin',
     'categories',
     'magasins',
     'registration',
     'profiles',
     'evenements',
+    'clients',
     'commandes',
     'django_mailer',
     #'djangotasks',
@@ -258,6 +258,12 @@ LOGGING = {
         },
     'loggers': {
         'Instantaneus': {
+                    'handlers': ['normal','console'],
+                    'level': 'DEBUG',
+                    #'filters': ['request'],
+                    'propagate': True,
+                    },
+        'evenements': {
                     'handlers': ['normal','console'],
                     'level': 'DEBUG',
                     #'filters': ['request'],
